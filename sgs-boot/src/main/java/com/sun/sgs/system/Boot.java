@@ -39,16 +39,17 @@ import java.util.Scanner;
 /**
  * Bootstraps and launches a Project Darkstar server.
  */
-public final class Boot {
+public class Boot {
     private static final Logger logger = Logger.getLogger(Boot.class.getName());
 
     private static volatile Process sgsProcess = null;
+    private BootEnvironment bootEnvironment;
 
     /**
      * This class should not be instantiated.
      */
-    private Boot() {
-        
+    protected Boot(BootEnvironment bootEnvironment) {
+        this.bootEnvironment = bootEnvironment;
     }
 
     /**
@@ -69,6 +70,11 @@ public final class Boot {
      * @throws Exception if there is any problem booting up
      */
     public static void main(String[] args) throws Exception {
+        Boot b = new Boot(new BootEnvironment());
+        b.runMain(args);
+    }
+
+    protected void runMain(String[] args) throws Exception {
         if (args.length > 1) {
             logger.log(Level.SEVERE, "Invalid number of arguments");
             throw new IllegalArgumentException("Invalid number of arguments");
@@ -77,9 +83,9 @@ public final class Boot {
         //load properties from configuration file
         SubstitutionProperties properties = null;
         if (args.length == 0) {
-            properties = BootEnvironment.loadProperties(null);
+            properties = bootEnvironment.loadProperties(null);
         } else {
-            properties = BootEnvironment.loadProperties(args[0]);
+            properties = bootEnvironment.loadProperties(args[0]);
         }
         
         //get the java executable and verify version
@@ -226,7 +232,7 @@ public final class Boot {
      * @param extGraph collection for the extension jar files
      * @return classpath to use to run the kernel
      */
-    private static String bootClassPath(Properties env, ExtJarGraph extGraph) {
+    protected String bootClassPath(Properties env, ExtJarGraph extGraph) {
         //determine SGS_HOME
         String sgsHome = env.getProperty(BootEnvironment.SGS_HOME);
         if (sgsHome == null) {
@@ -329,7 +335,7 @@ public final class Boot {
      * @param env the environment
      * @return path to use as the {@code java.library.path} in the kernel
      */
-    private static String bootNativePath(Properties env) {
+    protected String bootNativePath(Properties env) {
         String type = env.getProperty(BootEnvironment.BDB_TYPE);
         String bdb = env.getProperty(BootEnvironment.BDB_NATIVES);
         String custom = env.getProperty(BootEnvironment.CUSTOM_NATIVES);

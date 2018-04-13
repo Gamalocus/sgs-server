@@ -37,16 +37,9 @@ import java.util.logging.Level;
  * This class also provides utility methods to load configuration properties
  * from a config file into a {@link SubstitutionProperties} object.
  */
-public final class BootEnvironment {
+public class BootEnvironment {
     private static final Logger logger = Logger.getLogger(
             BootEnvironment.class.getName());
-    
-    /**
-     * This class should not be instantiated.
-     */
-    private BootEnvironment() {
-        
-    }
     
     /**
      * Default location of the bootstrapper jar relative to {@code SGS_HOME}.
@@ -237,7 +230,7 @@ public final class BootEnvironment {
      * @throws IOException if there is a problem loading the file
      * @throws URISyntaxException if the filename is invalid
      */
-    public static SubstitutionProperties loadProperties(String filename)
+    public SubstitutionProperties loadProperties(String filename)
             throws IOException, URISyntaxException {
         
         //load properties from configuration file
@@ -248,6 +241,9 @@ public final class BootEnvironment {
             if (filename == null) {
                 sgsBoot = ClassLoader.getSystemResource(
                         BootEnvironment.SGS_BOOT);
+                if(sgsBoot == null) {
+                    throw new IOException(BootEnvironment.SGS_BOOT+" does not exist in classpath");
+                }
             } else {
                 sgsBoot = new File(filename).toURI().toURL();
             }
@@ -269,39 +265,27 @@ public final class BootEnvironment {
         //determine SGS_HOME
         String sgsHome = properties.getProperty(BootEnvironment.SGS_HOME);
         if (sgsHome == null) {
+            sgsHome = guessSgsHome();
             properties.clear();
-            URL jarLocation = BootEnvironment.class.
-                    getProtectionDomain().getCodeSource().getLocation();
-            
-            //get a File from the URL to convert URL escaped characters
-            File jarFile = new File(jarLocation.toURI());
-            String jarPath = jarFile.getPath();
-            int jarFileIndex = jarPath.indexOf(BootEnvironment.SGS_JAR);
-            if (jarFileIndex == -1) {
-                logger.log(Level.SEVERE, "Unable to determine SGS_HOME");
-                throw new IllegalStateException("Unable to determine SGS_HOME");
-            } else {
-                sgsHome = jarPath.substring(0, jarFileIndex - 1);
-                properties.setProperty(BootEnvironment.SGS_HOME, sgsHome);
-                //reload the properties so that the value for SGS_HOME
-                //is interpolated correctly in any other variables
-                is = null;
+            properties.setProperty(BootEnvironment.SGS_HOME, sgsHome);
+            //reload the properties so that the value for SGS_HOME
+            //is interpolated correctly in any other variables
+            is = null;
+            try {
+                is = sgsBoot.openStream();
+                properties.load(is);
+            } catch (IOException e) {
+                logger.log(Level.SEVERE,
+                           "Unable to load initial configuration", e);
+                throw e;
+            } finally {
                 try {
-                    is = sgsBoot.openStream();
-                    properties.load(is);
-                } catch (IOException e) {
-                    logger.log(Level.SEVERE, 
-                               "Unable to load initial configuration", e);
-                    throw e;
-                } finally {
-                    try {
-                        if (is != null) {
-                            is.close();
-                        }
-                    } catch (IOException ignore) {
-                        logger.log(Level.FINEST, 
-                                   "Unable to close stream", ignore);
+                    if (is != null) {
+                        is.close();
                     }
+                } catch (IOException ignore) {
+                    logger.log(Level.FINEST,
+                               "Unable to close stream", ignore);
                 }
             }
         }
@@ -312,14 +296,30 @@ public final class BootEnvironment {
         
         return properties;
     }
-    
+
+    protected String guessSgsHome() throws IOException, URISyntaxException {
+        URL jarLocation = BootEnvironment.class.
+                getProtectionDomain().getCodeSource().getLocation();
+
+        //get a File from the URL to convert URL escaped characters
+        File jarFile = new File(jarLocation.toURI());
+        String jarPath = jarFile.getPath();
+        int jarFileIndex = jarPath.indexOf(BootEnvironment.SGS_JAR);
+        if (jarFileIndex == -1) {
+            logger.log(Level.SEVERE, "Unable to determine SGS_HOME");
+            throw new IllegalStateException("Unable to determine SGS_HOME");
+        } else {
+            return jarPath.substring(0, jarFileIndex - 1);
+        }
+    }
+
     /**
      * Loads default values for the given set of properties if any
      * required properties are missing.
      * 
      * @param properties the set of boot configuration properties
      */
-    private static void configureDefaultProperties(
+    protected void configureDefaultProperties(
             SubstitutionProperties properties) {
         
         //load defaults for any missing properties

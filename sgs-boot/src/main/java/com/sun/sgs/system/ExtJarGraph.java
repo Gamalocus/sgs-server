@@ -36,7 +36,7 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 /** A collection of extension jars used to determine ordering. */
-class ExtJarGraph {
+public class ExtJarGraph {
 
     // the location for an extension's properties
     static final String EXT_PROPERTIES_FILE = "META-INF/ext.properties";
