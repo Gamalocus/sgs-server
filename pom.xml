@@ -258,7 +258,7 @@
     <profile>
       <id>macosx-ppc</id>
       <properties>
-	<bdb.lib.dir>macosx-ppc</bdb.lib.dir>
+        <bdb.lib.dir>macosx-ppc</bdb.lib.dir>
       </properties>
       <activation>
 	<os>
@@ -271,7 +271,7 @@
     <profile>
       <id>macosx-x86</id>
       <properties>
-	<bdb.lib.dir>macosx-x86</bdb.lib.dir>
+        <bdb.lib.dir>macosx-x86</bdb.lib.dir>
       </properties>
       <activation>
 	<os>
@@ -284,7 +284,7 @@
     <profile>
       <id>macosx-x86_64</id>
       <properties>
-	<bdb.lib.dir>macosx-x86</bdb.lib.dir>
+        <bdb.lib.dir>macosx-x86</bdb.lib.dir>
       </properties>
       <activation>
 	<os>
@@ -297,7 +297,7 @@
     <profile>
       <id>solaris-x86</id>
       <properties>
-	<bdb.lib.dir>solaris-x86</bdb.lib.dir>
+        <bdb.lib.dir>solaris-x86</bdb.lib.dir>
       </properties>
       <activation>
 	<os>
@@ -310,7 +310,7 @@
     <profile>
       <id>solaris-sparc</id>
       <properties>
-	<bdb.lib.dir>solaris-sparc</bdb.lib.dir>
+        <bdb.lib.dir>solaris-sparc</bdb.lib.dir>
       </properties>
       <activation>
 	<os>
@@ -323,7 +323,7 @@
     <profile>
       <id>linux-x86</id>
       <properties>
-	<bdb.lib.dir>linux-x86</bdb.lib.dir>
+        <bdb.lib.dir>linux-x86</bdb.lib.dir>
       </properties>
       <activation>
 	<os>
@@ -336,7 +336,7 @@
     <profile>
       <id>linux-x86_64</id>
       <properties>
-	<bdb.lib.dir>linux-x86_64</bdb.lib.dir>
+        <bdb.lib.dir>linux-x86_64</bdb.lib.dir>
       </properties>
       <activation>
 	<os>
@@ -349,7 +349,7 @@
     <profile>
       <id>win32-x86</id>
       <properties>
-	<bdb.lib.dir>win32-x86</bdb.lib.dir>
+        <bdb.lib.dir>win32-x86</bdb.lib.dir>
       </properties>
       <activation>
 	<os>
@@ -440,7 +440,7 @@
     <sgs-shared.version>1.11</sgs-shared.version>
     <sgs-client.version>0.9.11</sgs-client.version>
     <bdb.version>4.5.20</bdb.version>
-    <bdb.je.version>3.3.75</bdb.je.version>
+    <bdb.je.version>4.0.92</bdb.je.version>
     <jung.version>2.0</jung.version>
     <sgs-test-ext.version>1.1</sgs-test-ext.version>
 
